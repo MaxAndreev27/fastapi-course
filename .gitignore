@@ -22,6 +22,7 @@ db.sqlite3-journal
 
 # Секретні налаштування та ключі
 .env
+.env.production
 local_settings.py
 
 # Медіа-файли (завантаження користувачів)

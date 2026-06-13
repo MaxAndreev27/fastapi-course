@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from typing import Annotated
+
+from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -18,7 +20,10 @@ async def root():
 
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str | None = None):
+async def read_item(
+    item_id: Annotated[int, Path(title="The ID of the item to get")],
+    q: Annotated[str | None, Query(max_length=50)] = None,
+):
     return {"item_id": item_id, "q": q}
 
 

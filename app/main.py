@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI, Path, Query, status
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -27,9 +27,10 @@ async def read_item(
     return {"item_id": item_id, "q": q}
 
 
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+@app.put("/items/{item_id}", status_code=status.HTTP_201_CREATED)
+def update_item(item_id: int, item: Item) -> Item:
+    # return {"item_name": item.name, "item_id": item_id}
+    return item
 
 
 @app.get("/info")

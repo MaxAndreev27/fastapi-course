@@ -1,4 +1,5 @@
 # from pydantic import SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,6 +9,9 @@ class Settings(BaseSettings):
     # DATABASE_URL: str
     # SECRET_KEY: SecretStr
     API_PORT: int = 8000
+    SECRET_KEY: SecretStr
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -16,4 +20,4 @@ class Settings(BaseSettings):
     )
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # DATABASE_URL: str
     # SECRET_KEY: SecretStr
     API_PORT: int = 8000
+    # to get a string like this run:openssl rand -hex 32
     SECRET_KEY: SecretStr
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60

@@ -1,12 +1,20 @@
-from typing import Annotated
+from typing import Annotated, Generator
 
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlmodel import Session
 
+from app.core.database import engine
 from app.core.security import ALGORITHM, SECRET_KEY
 from app.schemas.auth import TokenData, User
 from app.services.auth import fake_users_db, get_user
+
+
+def get_session() -> Generator[Session, None, None]:
+    with Session(engine) as session:
+        yield session
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 

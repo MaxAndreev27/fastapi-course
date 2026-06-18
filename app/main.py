@@ -1,17 +1,29 @@
+from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import FastAPI, Path, Query, status
 from pydantic import BaseModel
 
 from app.api.v1.auth import router as auth_router
+from app.api.v1.heroes import router as heroes_router
 from app.api.v1.users import router as users_router
 from app.core.config import settings
+from app.core.database import init_db
 
-app = FastAPI(title=settings.PROJECT_NAME)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("🤖 Запуск init_db()...")
+    init_db()
+    yield
+
+
+app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 # Підключаємо наші модулі авторизації та користувачів
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
+app.include_router(heroes_router, prefix="/api/v1")
 
 
 class Item(BaseModel):
@@ -45,4 +57,5 @@ async def get_info():
         "project_name": settings.PROJECT_NAME,
         "debug": settings.DEBUG,
         "api_port": settings.API_PORT,
+        "database_url": settings.DATABASE_URL,
     }

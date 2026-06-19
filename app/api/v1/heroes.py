@@ -14,7 +14,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 @router.get("/", response_model=list[HeroPublic])
-async def read_heroes(
+def read_heroes(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
@@ -25,7 +25,7 @@ async def read_heroes(
 
 
 @router.post("/", response_model=HeroPublic)
-async def create_hero(hero: HeroCreate, session: SessionDep):
+def create_hero(hero: HeroCreate, session: SessionDep):
     try:
         db_hero = Hero.model_validate(hero)
         session.add(db_hero)

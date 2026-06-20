@@ -50,7 +50,7 @@ def read_hero(hero_id: int, session: SessionDep):
     return hero
 
 
-@router.patch("/heroes/{hero_id}", response_model=HeroPublic)
+@router.patch("/{hero_id}", response_model=HeroPublic)
 def update_hero(hero_id: int, hero: HeroUpdate, session: SessionDep):
     hero_db = session.get(Hero, hero_id)
     if not hero_db:
@@ -65,7 +65,7 @@ def update_hero(hero_id: int, hero: HeroUpdate, session: SessionDep):
     return hero_db
 
 
-@router.delete("/heroes/{hero_id}")
+@router.delete("/{hero_id}")
 def delete_hero(hero_id: int, session: SessionDep):
     hero = session.get(Hero, hero_id)
     if not hero:

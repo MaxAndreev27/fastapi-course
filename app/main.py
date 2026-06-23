@@ -4,10 +4,10 @@ from typing import Annotated
 from fastapi import FastAPI, Path, Query, status
 from pydantic import BaseModel
 
+from app.api.dependencies import SettingsDep, get_settings
 from app.api.v1.auth import router as auth_router
 from app.api.v1.heroes import router as heroes_router
 from app.api.v1.users import router as users_router
-from app.core.config import settings
 from app.core.database import init_db
 
 
@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
+app = FastAPI(title=get_settings().PROJECT_NAME, lifespan=lifespan)
 
 # Підключаємо наші модулі авторизації та користувачів
 app.include_router(auth_router, prefix="/api/v1")
@@ -52,7 +52,7 @@ def update_item(item_id: int, item: Item) -> Item:
 
 
 @app.get("/info")
-async def get_info():
+async def get_info(settings: SettingsDep):
     return {
         "project_name": settings.PROJECT_NAME,
         "debug": settings.DEBUG,

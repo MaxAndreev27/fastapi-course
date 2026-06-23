@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Annotated, Generator
 
 import jwt
@@ -5,10 +6,19 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
+from app.core.config import Settings
 from app.core.database import engine
 from app.core.security import ALGORITHM, SECRET_KEY
 from app.schemas.auth import TokenData, User
 from app.services.auth import fake_users_db, get_user
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()  # type: ignore
+
+
+SettingsDep = Annotated[Settings, Depends(get_settings)]
 
 
 def get_session() -> Generator[Session, None, None]:

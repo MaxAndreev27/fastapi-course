@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.core.config import settings
+from app.api.dependencies import SettingsDep
 from app.core.security import create_access_token
 from app.schemas.auth import Token
 from app.services.auth import authenticate_user, fake_users_db
@@ -15,6 +15,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    settings: SettingsDep,
 ) -> Token:
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
@@ -25,6 +26,7 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username},
+        expires_delta=access_token_expires,
     )
     return Token(access_token=access_token, token_type="bearer")

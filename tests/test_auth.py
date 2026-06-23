@@ -1,14 +1,24 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 
-client = TestClient(app)
+
+@pytest.fixture
+def client():
+    with TestClient(app) as c:
+        yield c
 
 
-def test_login_with_valid_credentials_returns_token():
+@pytest.fixture
+def test_user():
+    return {"username": "johndoe", "password": "secret"}
+
+
+def test_login_with_valid_credentials_returns_token(client, test_user):
     response = client.post(
         "/api/v1/auth/token",
-        data={"username": "johndoe", "password": "secret"},
+        data={"username": test_user["username"], "password": test_user["password"]},
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
 
@@ -19,10 +29,10 @@ def test_login_with_valid_credentials_returns_token():
     assert json_data["access_token"]
 
 
-def test_login_with_invalid_credentials_returns_401():
+def test_login_with_invalid_credentials_returns_401(client, test_user):
     response = client.post(
         "/api/v1/auth/token",
-        data={"username": "johndoe", "password": "wrong-password"},
+        data={"username": test_user["username"], "password": "wrong-password"},
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
 
@@ -30,10 +40,10 @@ def test_login_with_invalid_credentials_returns_401():
     assert response.json()["detail"] == "Incorrect username or password"
 
 
-def test_access_to_protected_endpoint_requires_valid_token():
+def test_access_to_protected_endpoint_requires_valid_token(client, test_user):
     token_response = client.post(
         "/api/v1/auth/token",
-        data={"username": "johndoe", "password": "secret"},
+        data={"username": test_user["username"], "password": test_user["password"]},
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
     token = token_response.json()["access_token"]
@@ -44,4 +54,4 @@ def test_access_to_protected_endpoint_requires_valid_token():
     )
 
     assert response.status_code == 200
-    assert response.json()["username"] == "johndoe"
+    assert response.json()["username"] == test_user["username"]

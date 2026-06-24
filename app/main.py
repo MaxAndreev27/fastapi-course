@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import FastAPI, Path, Query, status
+from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
 from app.api.dependencies import SettingsDep, get_settings
@@ -18,7 +19,17 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=get_settings().PROJECT_NAME, lifespan=lifespan)
+def custom_generate_unique_id(route: APIRoute):
+    # Беремо перший тег роутера та ім'я функції ендпоінту
+    tag = route.tags[0] if route.tags else "default"
+    return f"{tag}-{route.name}"
+
+
+app = FastAPI(
+    title=get_settings().PROJECT_NAME,
+    lifespan=lifespan,
+    generate_unique_id_function=custom_generate_unique_id,
+)
 
 # Підключаємо наші модулі авторизації та користувачів
 app.include_router(auth_router, prefix="/api/v1")

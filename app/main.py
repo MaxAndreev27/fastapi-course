@@ -6,9 +6,7 @@ from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
 from app.api.dependencies import SettingsDep, get_settings
-from app.api.v1.auth import router as auth_router
-from app.api.v1.heroes import router as heroes_router
-from app.api.v1.users import router as users_router
+from app.api.v1.router import v1_router
 from app.core.database import init_db
 
 
@@ -31,10 +29,7 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
-# Підключаємо наші модулі авторизації та користувачів
-app.include_router(auth_router, prefix="/api/v1")
-app.include_router(users_router, prefix="/api/v1")
-app.include_router(heroes_router, prefix="/api/v1")
+app.include_router(v1_router, prefix="/api/v1")
 
 
 class Item(BaseModel):

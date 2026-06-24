@@ -9,7 +9,7 @@ from app.core.security import create_access_token
 from app.schemas.auth import Token
 from app.services.auth import authenticate_user, fake_users_db
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter()
 
 
 @router.post("/token")

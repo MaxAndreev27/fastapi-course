@@ -1,16 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from app.api.dependencies import get_session
+from app.api.dependencies import SessionDep
 from app.models.hero import Hero, HeroCreate, HeroPublic, HeroUpdate
 
-router = APIRouter(prefix="/heroes", tags=["Heroes"])
-
-# Створюємо тип-аліас для сесії, щоб код був чистішим
-SessionDep = Annotated[Session, Depends(get_session)]
+router = APIRouter()
 
 
 @router.get("/", response_model=list[HeroPublic])

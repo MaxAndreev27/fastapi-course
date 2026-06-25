@@ -12,7 +12,8 @@ def client():
 
 @pytest.fixture
 def test_user():
-    return {"username": "johndoe", "password": "secret"}
+    # Замість johndoe беремо користувача 'user', якого Alembic автоматично створює в міграції
+    return {"username": "user", "password": "secret"}
 
 
 def test_login_with_valid_credentials_returns_token(client, test_user):

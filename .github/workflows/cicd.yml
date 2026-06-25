@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # 1. Етап тестування
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Примусово запускаємо міграції Alembic, щоб створити структуру таблиць та засідити користувачів
+    - name: Run Alembic Migrations
+      env:
+        DATABASE_URL: sqlite:///./test.db
+      run: alembic upgrade head
+
+    - name: Run pytest
+      env:
+        DATABASE_URL: sqlite:///./test.db
+        SECRET_KEY: dummy_secret_key_for_github_actions_testing_purposes_only_123
+      run: pytest
+
+  # 2. Етап деплою
+  deploy:
+    name: Deploy app
+    runs-on: ubuntu-latest
+    # КЛЮЧОВИЙ РЯДОК: Цей job не почнеться, поки job 'test' не завершиться успішно!
+    needs: test
+    # Деплоїмо тільки тоді, коли це реальний пуш у main/master (а не pull request)
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

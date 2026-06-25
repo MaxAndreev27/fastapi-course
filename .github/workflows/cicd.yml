@@ -10,6 +10,12 @@ jobs:
   # 1. Етап тестування
   test:
     runs-on: ubuntu-latest
+    
+    # Виносимо змінні сюди — тепер вони доступні для КОЖНОГО кроку всередині цього джоба
+    env:
+      DATABASE_URL: sqlite:///./test.db
+      SECRET_KEY: dummy_secret_key_for_github_actions_testing_purposes_only_123
+
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
@@ -25,25 +31,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Примусово запускаємо міграції Alembic, щоб створити структуру таблиць та засідити користувачів
+    # Тепер Alembic бачитиме SECRET_KEY і успішно виконає імпорт
     - name: Run Alembic Migrations
-      env:
-        DATABASE_URL: sqlite:///./test.db
       run: alembic upgrade head
 
+    # Pytest теж автоматично отримає ці змінні
     - name: Run pytest
-      env:
-        DATABASE_URL: sqlite:///./test.db
-        SECRET_KEY: dummy_secret_key_for_github_actions_testing_purposes_only_123
       run: pytest
 
   # 2. Етап деплою
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    # КЛЮЧОВИЙ РЯДОК: Цей job не почнеться, поки job 'test' не завершиться успішно!
     needs: test
-    # Деплоїмо тільки тоді, коли це реальний пуш у main/master (а не pull request)
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
       - uses: actions/checkout@v4

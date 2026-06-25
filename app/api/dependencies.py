@@ -9,8 +9,9 @@ from sqlmodel import Session
 from app.core.config import Settings
 from app.core.database import engine
 from app.core.security import ALGORITHM, SECRET_KEY
-from app.schemas.auth import TokenData, User
-from app.services.auth import fake_users_db, get_user
+from app.models.user import User
+from app.schemas.auth import TokenData
+from app.services.auth import get_user_by_username
 
 
 @lru_cache
@@ -31,7 +32,10 @@ SessionDep = Annotated[Session, Depends(get_session)]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: SessionDep,
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -39,23 +43,33 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
+        username: str | None = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
     except jwt.InvalidTokenError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+
+    if not token_data.username:
+        raise credentials_exception
+
+    user = get_user_by_username(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
 
+CurrentUserDep = Annotated[User, Depends(get_current_user)]
+
+
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)],
-):
+    current_user: CurrentUserDep,
+) -> User:  # <-- Додали чіткий тип повернення
     if current_user.disabled:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
         )
-    return current_user
+    return current_user  # <-- ОБОВ'ЯЗКОВО повертаємо користувача!
+
+
+ActiveUserDep = Annotated[User, Depends(get_current_active_user)]

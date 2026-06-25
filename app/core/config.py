@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     PROJECT_NAME: str = "FastAPI App"
     DEBUG: bool = False
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite:///./database.sqlite3"
     SECRET_KEY: SecretStr
     API_PORT: int = 8000
     # to get a string like this run:openssl rand -hex 32

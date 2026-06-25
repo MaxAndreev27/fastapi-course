@@ -5,13 +5,14 @@ from fastapi.routing import APIRoute
 
 from app.api.dependencies import get_settings
 from app.api.v1.router import v1_router
-from app.core.database import init_db
+
+# from app.core.database import init_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🤖 Запуск init_db()...")
-    init_db()
+    # print("🤖 Запуск init_db()...")
+    # init_db()
     yield
 
 

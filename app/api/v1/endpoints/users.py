@@ -26,7 +26,7 @@ def read_users(
 @router.post(
     "/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED
 )
-def register_user(user_in: UserCreate, current_user: ActiveUserDep, db: SessionDep):
+def register_user(user_in: UserCreate, db: SessionDep):
     """
     Реєстрація нового користувача з безпечним збереженням хэшу пароля в БД.
     """

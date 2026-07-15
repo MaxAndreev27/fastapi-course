@@ -6,6 +6,9 @@ from sqlmodel import SQLModel
 
 from alembic import context
 
+from app.models.user import User
+from app.models.hero import Hero
+
 config = context.config
 
 

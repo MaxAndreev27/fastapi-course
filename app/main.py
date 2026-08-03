@@ -35,6 +35,7 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://vue-dashboard.fly.dev",
+    "https://nuxt-dashboard.fly.dev",
 ]
 
 app.add_middleware(

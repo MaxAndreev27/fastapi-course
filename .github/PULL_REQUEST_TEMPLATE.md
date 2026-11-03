@@ -4,7 +4,7 @@ Describe what changed and why.
 
 ## Testing
 
-- [ ] `pytest`
+- [ ] `uv run pytest`
 - [ ] Other relevant checks completed
 
 ## Checklist

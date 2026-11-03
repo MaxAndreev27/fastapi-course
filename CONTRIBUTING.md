@@ -3,16 +3,16 @@
 ## Getting Started
 
 1. Fork the repository and create a branch from `main`.
-2. Create and activate a Python 3.13 virtual environment.
-3. Install dependencies with `pip install -r requirements.txt`.
+2. Install [uv](https://docs.astral.sh/uv/) (Python 3.12+).
+3. Install dependencies with `uv sync`.
 4. Set `SECRET_KEY` and, if needed, `DATABASE_URL` in your environment or `.env` file.
-5. Run migrations with `alembic upgrade head`.
+5. Run migrations with `uv run alembic upgrade head`.
 
 ## Development Workflow
 
 1. Keep changes focused on one problem.
 2. Add or update tests when behavior changes.
-3. Run `pytest` before opening a pull request.
+3. Run `uv run pytest` before opening a pull request.
 4. Describe the motivation and testing performed in the pull request template.
 
 ## Pull Requests

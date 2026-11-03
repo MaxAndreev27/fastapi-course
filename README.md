@@ -13,7 +13,8 @@ A modern, production-ready backend application built with **FastAPI** and **SQLM
 
 ## 🛠️ Tech Stack
 
-- **Language:** Python 3.13
+- **Language:** Python 3.12+
+- **Package Manager:** uv
 - **Framework:** FastAPI
 - **ORM/Database Layer:** SQLModel / SQLAlchemy
 - **Database:** SQLite (with WAL/persistence configuration)
@@ -30,7 +31,7 @@ A modern, production-ready backend application built with **FastAPI** and **SQLM
 
 ### 1. Prerequisites
 
-Ensure you have **Python 3.13** installed on your system.
+Install [uv](https://docs.astral.sh/uv/). It will provision Python 3.12+ automatically if needed.
 
 ### 2. Clone and Environment Setup
 
@@ -39,4 +40,20 @@ Clone the repository and navigate into the project directory:
 ```bash
 git clone <your-repository-url>
 cd fastapi-course
+```
+
+### 3. Install Dependencies
+
+```bash
+uv sync
+```
+
+### 4. Configure and Run
+
+Set `SECRET_KEY` (and optionally `DATABASE_URL`) in your environment or `.env` file, then:
+
+```bash
+uv run alembic upgrade head
+uv run fastapi dev
+uv run pytest
 ```

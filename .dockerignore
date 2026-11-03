@@ -3,3 +3,12 @@ fly.toml
 __pycache__/
 .envrc
 .venv/
+
+.env
+.env.*
+!.env.example
+*.sqlite3
+*.db
+.pytest_cache/
+.github/
+.vscode/
